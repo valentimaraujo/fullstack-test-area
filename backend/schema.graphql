@@ -1,0 +1,26 @@
+schema {
+    query: Query,
+    mutation: Mutation
+}
+
+type Query {
+    getOrderById(ORDER_ID: ID!): Order!
+}
+
+type Order {
+    ORDER_ID: ID!,
+    TITLE: String!
+    DESCRIPTION: String
+    CREATEDAT: AWSDateTime!
+    UPDATEDAT: AWSDateTime!
+}
+
+type Mutation {
+    createOrder(newOrder: OrderInput): Order!
+}
+
+input OrderInput {
+    ORDER_ID: ID!
+    TITLE: String!
+    DESCRIPTION: String
+}

@@ -1,0 +1,7 @@
+{
+  "version": "2017-02-28",
+  "operation": "GetItem",
+  "key": {
+    "ORDER_ID": $util.dynamodb.toDynamoDBJson($ctx.args.ORDER_ID)
+  }
+}

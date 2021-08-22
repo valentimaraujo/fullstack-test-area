@@ -6,7 +6,7 @@ import dynamodbTables from './config/dynamodb-tables'
 import hello from '@functions/hello';
 
 const serverlessConfiguration: AWS = {
-  service: 'test-area-project',
+  service: 'fullstack-test-area',
   frameworkVersion: '2',
 
   custom: {
@@ -14,8 +14,42 @@ const serverlessConfiguration: AWS = {
       webpackConfig: './webpack.config.js',
       includeModules: true,
     },
+    appSync: {
+      name: 'fullstackTestAreaAppSyncApi',
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      userPoolConfig: {
+        awsRegion: '${self:provider.region}',
+        defaultAction: 'ALLOW',
+        userPoolId: {Ref : 'cognitoUserPool'}
+      },
+      mappingTemplatesLocation: 'mapping-templates',
+      mappingTemplates: [
+        {
+          type: 'Query',
+          field: 'getOrderById',
+          dataSource: 'orderTable'
+        },
+        {
+          type: 'Mutation',
+          field: 'createOrder',
+          dataSource: 'orderTable'
+        }
+      ],
+      dataSources: [
+          {
+            type: 'AMAZON_DYNAMODB',
+            name: 'orderTable',
+            config: {
+              tableName: {Ref: 'orderTable'}
+            }
+          }
+        ]
+    }
   },
-  plugins: ['serverless-webpack'],
+  plugins: [
+    'serverless-webpack',
+    'serverless-appsync-plugin'
+  ],
   package: {
     individually: true,
     excludeDevDependencies: true,
@@ -24,6 +58,7 @@ const serverlessConfiguration: AWS = {
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
+    region: 'us-east-1',
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,

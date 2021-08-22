@@ -3,13 +3,24 @@ export default {
     Type: 'AWS::Cognito::UserPool',
     Properties: {
       UsernameAttributes: ['email'],
-      UserPoolName: 'TestAreaProject'
+      UserPoolName: 'fullstackTestArea-${self:provider.stage}'
     }
   },
   cognitoUserPoolClient: {
     Type: 'AWS::Cognito::UserPoolClient',
     Properties: {
-      ClientName: 'AppUser',
+      ClientName: 'fullstackTestAreaUserPoolClient-${self:provider.stage}',
+      UserPoolId: {
+        Ref: 'cognitoUserPool'
+      }
+    }
+  },
+  cognitoAdminUserGroup: {
+    Type: 'AWS::Cognito::UserPoolGroup',
+    Properties: {
+      Description: 'Only AdminUser users can belong to this group',
+      GroupName: 'AdminUser-${self:provider.stage}',
+      Precedence: 0,
       UserPoolId: {
         Ref: 'cognitoUserPool'
       }
@@ -19,7 +30,7 @@ export default {
     Type: 'AWS::Cognito::UserPoolGroup',
     Properties: {
       Description: 'Only AppDriver users can belong to this group',
-      GroupName: 'AppDriver',
+      GroupName: 'AppDriver-${self:provider.stage}',
       Precedence: 1,
       UserPoolId: {
         Ref: 'cognitoUserPool'
@@ -30,11 +41,50 @@ export default {
     Type: 'AWS::Cognito::UserPoolGroup',
     Properties: {
       Description: 'Only AppUser users can belong to this group',
-      GroupName: 'AppUser',
-      Precedence: 1,
+      GroupName: 'AppUser-${self:provider.stage}',
+      Precedence: 2,
       UserPoolId: {
         Ref: 'cognitoUserPool'
       }
+    }
+  },
+  cognitoAdminUserIAMRole: {
+    Type: 'AWS::IAM::Role',
+    Properties: {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              Federated: ['cognito-identify.amazonaws.com']
+            },
+            Action: ['sts:AssumeRoleWithWebIdentity']
+          }
+        ]
+      },
+      Policies: [
+        {
+          PolicyName: 'fullstackTestAreaAdminUserPolicy-${self:provider.stage}',
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:*',
+                ],
+                Resource: [
+                  {
+                    'Fn::GetAtt': 'orderTable.Arn'
+                  }
+                ]
+              },
+            ]
+          }
+        }
+      ],
+      RoleName: 'fullstackTestAreaAdminUserRole-${self:provider.stage}'
     }
   },
   cognitoAppDriverIAMRole: {
@@ -54,7 +104,7 @@ export default {
       },
       Policies: [
         {
-          PolicyName: 'TestAreaProjectAppDriverPolicy',
+          PolicyName: 'fullstackTestAreaAppDriverPolicy-${self:provider.stage}',
           PolicyDocument: {
             Version: '2012-10-17',
             Statement: [
@@ -77,7 +127,7 @@ export default {
           }
         }
       ],
-      RoleName: 'TestAreaProjectAppDriverRole'
+      RoleName: 'fullstackTestAreaAppDriverRole-${self:provider.stage}'
     }
   },
   cognitoAppUserIAMRole: {
@@ -97,7 +147,7 @@ export default {
       },
       Policies: [
         {
-          PolicyName: 'TestAreaProjectAppUserPolicy',
+          PolicyName: 'fullstackTestAreaAppUserPolicy-${self:provider.stage}',
           PolicyDocument: {
             Version: '2012-10-17',
             Statement: [
@@ -120,7 +170,7 @@ export default {
           }
         }
       ],
-      RoleName: 'TestAreaProjectAppUserRole'
+      RoleName: 'fullstackTestAreaAppUserRole-${self:provider.stage}'
     }
   }
 }
