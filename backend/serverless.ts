@@ -59,6 +59,8 @@ const serverlessConfiguration: AWS = {
     name: 'aws',
     runtime: 'nodejs14.x',
     region: 'us-east-1',
+    stage: 'dev',
+    lambdaHashingVersion: '20201221',
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -66,7 +68,6 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
     },
-    lambdaHashingVersion: '20201221',
   },
   // import the function via paths
   functions: { hello },

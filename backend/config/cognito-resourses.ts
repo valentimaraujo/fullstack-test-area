@@ -15,6 +15,21 @@ export default {
       }
     }
   },
+  cognitoIdentityPool: {
+    Type: "AWS::Cognito::IdentityPool",
+    Properties: {
+      IdentityPoolName: 'fullstackTestAreaIdentityPool-${self:provider.stage}',
+      AllowUnauthenticatedIdentities: false,
+      CognitoIdentityProviders: [{
+        ClientId: {
+          Ref: 'cognitoUserPoolClient'
+        },
+        ProviderName: {
+          'Fn::GetAtt': 'cognitoUserPool.ProviderName'
+        }
+      }]
+    }
+  },
   cognitoAdminUserGroup: {
     Type: 'AWS::Cognito::UserPoolGroup',
     Properties: {

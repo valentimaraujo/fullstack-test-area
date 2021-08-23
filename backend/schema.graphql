@@ -1,6 +1,7 @@
 schema {
     query: Query,
-    mutation: Mutation
+    mutation: Mutation,
+    subscription: Subscription
 }
 
 type Query {
@@ -16,11 +17,20 @@ type Order {
 }
 
 type Mutation {
-    createOrder(newOrder: OrderInput): Order!
+    createOrder(input: CreateOrderInput): Order!
+    updateOrder(input: UpdateOrderInput!): Order
 }
 
-input OrderInput {
-    ORDER_ID: ID!
+input CreateOrderInput {
     TITLE: String!
-    DESCRIPTION: String
+    DESCRIPTION: String!
+}
+
+input UpdateOrderInput {
+    TITLE: String!
+    DESCRIPTION: String!
+}
+
+type Subscription {
+    onOrderUpdated(ORDER_ID: ID!): Order @aws_subscribe(mutations : ["updateOrder"])
 }

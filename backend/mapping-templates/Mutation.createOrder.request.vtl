@@ -1,12 +1,12 @@
 {
   "version": "2017-02-28",
-  "operation": "PutItem",
+  "operation": "UpdateItem",
   "key": {
-    "ORDER_ID": $util.dynamodb.toDynamoDBJson($util.autoId())
+    "ORDER_ID": $util.dynamodb.toDynamoDBJson($ctx.args.ORDER_ID)
   },
   "attributeValues": {
-    "TITLE": $util.dynamodb.toDynamoDBJson($ctx.args.newOrder.TITLE),
-    "DESCRIPTION": $util.dynamodb.toDynamoDBJson($ctx.args.newOrder.DESCRIPTION),
+    "TITLE": $util.dynamodb.toDynamoDBJson($ctx.args.input.TITLE),
+    "DESCRIPTION": $util.dynamodb.toDynamoDBJson($ctx.args.input.DESCRIPTION),
     "CREATEDAT": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601()),
     "UPDATEDAT": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
   }
